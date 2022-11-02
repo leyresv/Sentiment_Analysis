@@ -1,8 +1,14 @@
+import sys, os
+cur_file_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(cur_file_path, '..'))
+
 import pickle
 from data.preprocess_tweets import extract_freq_feature
 
-DOMAINS = ["tweet"]
 
+
+DOMAINS = ["tweet"]
+pkg_root = os.path.join(cur_file_path, '..')
 
 class SentimentClassifier:
     """
@@ -13,7 +19,7 @@ class SentimentClassifier:
         if domain not in DOMAINS:
             raise ValueError(f"Domain not recognized. Choose between: {', '.join(DOMAINS)}")
         self.domain = domain
-        self.classifier = pickle.load(open(f"../models/{self.domain}_classifier.sav", "rb"))
+        self.classifier = pickle.load(open(os.path.join(pkg_root, 'models/' + self.domain + '_classifier.sav'), "rb"))
 
     def predict_class(self, text):
         """
@@ -23,7 +29,7 @@ class SentimentClassifier:
         :return: sentiment label
         """
         if self.domain == "tweet":
-            vocab_dict = pickle.load(open("../data/tweets_vocab.pkl", "rb"))
+            vocab_dict = pickle.load(open(os.path.join(pkg_root, "data/tweets_vocab.pkl"), "rb"))
             processed_text = extract_freq_feature([text], vocab_dict)
             pred = self.classifier.predict(processed_text)
             if pred == 1:
